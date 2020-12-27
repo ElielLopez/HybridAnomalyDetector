@@ -93,10 +93,6 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             cf.push_back(tmpCF); // inserting into the returned vector
         }
     }
-
-//    for(int i=0;i<sizeOfVector;i++)
-//        delete ps[i];
-
 }
 
 // return a list of reports that contain a description and time.
@@ -107,12 +103,13 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     vector<AnomalyReport> ar;
     vector<float> tmp1, tmp2;
     string description, f1, f2;
+    Point center;
     float maximumDev;
-    float maximumRadius;
     float deviationOfPoint;
-    float tmpRadius;
-    float distanceFromCenter;
-    float co;
+    float maxCorr;
+    float maxRadius;
+    float distance;
+    float x, y;
     int sizeOfVector;
 
 
@@ -121,32 +118,82 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
         f2 = it->feature2;
         Line line = it->lin_reg;
         maximumDev = it->threshold;
-        maximumRadius = it->cf_radius;
-        co = it->corrlation;
+        center = it->cf_center;
+        maxCorr = it->corrlation;
+        maxRadius = it->cf_radius * 1.2;
 
         tmp1 = ts.getValues(f1);
         tmp2 = ts.getValues(f2);
         sizeOfVector = tmp1.size();
 
         for(int j = 0; j < sizeOfVector; j++) {
+
             Point p(tmp1[j], tmp2[j]);
             deviationOfPoint = dev(p, line);
-
-            distanceFromCenter = mc.calcDistance(p, it->cf_center);
 
             if(maximumDev < deviationOfPoint) {
                 description = f1 + "-" + f2;
                 ar.push_back(AnomalyReport(description, j + 1));
             }
 
-            if(0.5 < co && co < m_threshold) {
-                if(maximumRadius < distanceFromCenter) {
+            // E-F  center (10,10)  radius = 5
+            if(0.5 < maxCorr && maxCorr < m_threshold) {
+
+                distance = calcDistance(center, p);
+                distance /= 2;
+                distance *= 1.4;
+                if(maxRadius < distance) {
                     description = f1 + "-" + f2;
                     ar.push_back(AnomalyReport(description, j + 1));
                 }
             }
         }
+
+//        if(0.5 < maxCorr && maxCorr < m_threshold) {
+//            Point* ps3[sizeOfVector];
+//            for(int i=0;i<sizeOfVector;i++) {
+//                ps3[i]=new Point(tmp1[i],tmp2[i]);
+//            }
+//            Circle c = mc.findMinCircle(ps3, sizeOfVector);
+//
+//            for(int k = 0; k < sizeOfVector; k++) {
+//                Point p2(tmp1[k], tmp2[k]);
+//                if(!isInsideCircle(c, p2)) {
+//                    description = f1 + "-" + f2;
+//                    ar.push_back(AnomalyReport(description, k + 1));
+//                }
+//            }
+//        }
+
     }
 
     return ar;
+}
+
+bool SimpleAnomalyDetector::isInsideCircle(Circle c, Point a) {
+    return calcDistance(c.center, a) <= c.radius;
+}
+
+float SimpleAnomalyDetector::calcDistance(Point a, Point b) {
+
+    float distance;
+    float ax, ay;
+    float bx, by;
+    float x, y;
+
+    ax = a.x;
+    ay = a.y;
+    bx = b.x;
+    by = b.y;
+
+    x = ax - bx;
+    y = ay - by;
+
+    x = pow(x, 2);
+    y = pow(y, 2);
+
+    distance = x + y;
+    distance = sqrtf(distance);
+
+    return distance;
 }

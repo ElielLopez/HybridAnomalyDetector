@@ -50,6 +50,8 @@ public:
     vector<correlatedFeatures> getNormalModel(){
         return cf;
     }
+    virtual float calcDistance(Point a, Point b);
+    virtual bool isInsideCircle(Circle c, Point a);
 };
 
 

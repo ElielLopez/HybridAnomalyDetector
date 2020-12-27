@@ -141,11 +141,15 @@ int main(){
 
     int falseAlarms=r.size();
     for(int i=0;i<3;i++)
-        if(!detected[i])
-            cout<<"an anomaly was not detected (-10)"<<endl;
-        else
+        if(!detected[i]) {
+            cout << "an anomaly was not detected (-10)" << endl;
+//            for (auto it = anomalies.begin(); it != anomalies.end(); it++) {
+//                cout << it[i].description<< endl;
+//                cout << it[i].timeStep<< endl;
+//            }
+        } else {
             falseAlarms--;
-
+        }
     if(falseAlarms>0)
         cout<<"you have "<<falseAlarms<<" false alarms (-"<<min(30,falseAlarms*3)<<")"<<endl;
 
