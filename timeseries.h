@@ -1,12 +1,11 @@
+#ifndef EX4_TIMESERIES_H
+#define EX4_TIMESERIES_H
+
 #include <map>
 #include <vector>
 #include <iostream>
 #include <sstream>
 #include <fstream>
-
-
-#ifndef TIMESERIES_H_
-#define TIMESERIES_H_
 
 using namespace std;
 
@@ -40,4 +39,5 @@ public:
     ~TimeSeries();
 };
 
-#endif /* TIMESERIES_H_ */
+
+#endif //EX4_TIMESERIES_H

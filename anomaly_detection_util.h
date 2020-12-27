@@ -1,6 +1,9 @@
+//
+// Created by eliel on 27/12/2020.
+//
 
-#ifndef ANOMALYDETECTORUTIL_H_
-#define ANOMALYDETECTORUTIL_H_
+#ifndef EX4_ANOMALY_DETECTION_UTIL_H
+#define EX4_ANOMALY_DETECTION_UTIL_H
 
 
 float avg(float* x, int size);
@@ -16,18 +19,18 @@ float pearson(float* x, float* y, int size);
 
 class Line{
 public:
-	float a,b;
-	Line():a(0),b(0){};
-	Line(float a, float b):a(a),b(b){}
-	float f(float x){
-		return a*x+b;
-	}
+    float a,b;
+    Line():a(0),b(0){};
+    Line(float a, float b):a(a),b(b){}
+    float f(float x){
+        return a*x+b;
+    }
 };
 
 class Point{
 public:
-	const float x,y;
-	Point(float x, float y):x(x),y(y){}
+    const float x,y;
+    Point(float x, float y):x(x),y(y){}
 };
 
 // performs a linear regression and returns the line equation.
@@ -42,5 +45,6 @@ float dev(Point p,Line l);
 // returns the maximum value.
 float maximumDeviation(float* x, float* y, int size, Line l);
 
-// submit
-#endif
+
+
+#endif //EX4_ANOMALY_DETECTION_UTIL_H

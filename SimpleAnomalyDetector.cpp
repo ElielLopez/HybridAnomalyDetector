@@ -3,7 +3,7 @@
 
 // destructor.
 SimpleAnomalyDetector::~SimpleAnomalyDetector() {
-	// TODO Auto-generated destructor stub
+    // TODO Auto-generated destructor stub
 }
 
 // for every feature we will save the most correlated feature from the
@@ -108,4 +108,3 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
 
     return ar;
 }
-
