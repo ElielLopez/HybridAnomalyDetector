@@ -10,6 +10,7 @@ SimpleAnomalyDetector::~SimpleAnomalyDetector() {
 // list of feature.
 void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 
+    minCircle mc;
     Line linearRegression;
     vector<float> tmp1, tmp2;
     string f1, f2;
@@ -68,20 +69,50 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             tmpCF.corrlation = maxPearsonCorrelation;
             tmpCF.threshold = maxDeviation * (1 + minimumThreshold);
             tmpCF.lin_reg = linearRegression;
+            tmpCF.cf_radius = 0;
+            tmpCF.cf_center = Point(0,0);
+            cf.push_back(tmpCF); // inserting into the returned vector
+        }
+
+        //--------- for minCircle ----------//
+        if(0.5 < maxPearsonCorrelation && maxPearsonCorrelation < m_threshold) {
+            correlatedFeatures tmpCF;
+            tmpCF.feature1 = f1;
+            tmpCF.feature2 = maxCorrelatedFeature;
+            tmpCF.corrlation = maxPearsonCorrelation;
+            tmpCF.threshold = maxDeviation * (1 + minimumThreshold);
+            tmpCF.lin_reg = linearRegression;
+
+            Point* ps2[sizeOfVector];
+            for(int i=0;i<sizeOfVector;i++)
+                ps2[i]=new Point(tmp1[i],tmp2[i]);
+
+            tmpCF.cf_radius = mc.findMinCircle(ps2, sizeOfVector).radius;
+            tmpCF.cf_center = mc.findMinCircle(ps2, sizeOfVector).center;
+
             cf.push_back(tmpCF); // inserting into the returned vector
         }
     }
+
+//    for(int i=0;i<sizeOfVector;i++)
+//        delete ps[i];
+
 }
 
 // return a list of reports that contain a description and time.
 // given a time series with features and values, this function detect anomalies.
 vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
 
+    minCircle mc;
     vector<AnomalyReport> ar;
     vector<float> tmp1, tmp2;
     string description, f1, f2;
     float maximumDev;
+    float maximumRadius;
     float deviationOfPoint;
+    float tmpRadius;
+    float distanceFromCenter;
+    float co;
     int sizeOfVector;
 
 
@@ -90,6 +121,8 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
         f2 = it->feature2;
         Line line = it->lin_reg;
         maximumDev = it->threshold;
+        maximumRadius = it->cf_radius;
+        co = it->corrlation;
 
         tmp1 = ts.getValues(f1);
         tmp2 = ts.getValues(f2);
@@ -99,9 +132,18 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
             Point p(tmp1[j], tmp2[j]);
             deviationOfPoint = dev(p, line);
 
+            distanceFromCenter = mc.calcDistance(p, it->cf_center);
+
             if(maximumDev < deviationOfPoint) {
                 description = f1 + "-" + f2;
                 ar.push_back(AnomalyReport(description, j + 1));
+            }
+
+            if(0.5 < co && co < m_threshold) {
+                if(maximumRadius < distanceFromCenter) {
+                    description = f1 + "-" + f2;
+                    ar.push_back(AnomalyReport(description, j + 1));
+                }
             }
         }
     }

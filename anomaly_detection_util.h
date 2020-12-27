@@ -29,7 +29,8 @@ public:
 
 class Point{
 public:
-    const float x,y;
+    float x,y;
+    Point() : x(0), y(0) {};
     Point(float x, float y):x(x),y(y){}
 };
 
