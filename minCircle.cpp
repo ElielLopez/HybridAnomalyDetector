@@ -113,7 +113,7 @@ Circle minCircle::findMinCircle(Point** points,size_t size) {
                 Circle tmp = createTwoPointCircle(Point(points[i]->x, points[i]->y),
                                                   Point(points[j]->x, points[j]->y));
                 if(tmp.radius < mec.radius && isValidMEC(tmp, points, size)) {
-                    //mec = tmp;
+                    mec = tmp;
                 }
             }
         }

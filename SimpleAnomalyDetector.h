@@ -18,20 +18,19 @@ struct correlatedFeatures{
     float corrlation;
     Line lin_reg;
     float threshold;
-    // TODO add fields
+    //----//
     Point cf_center;
     float cf_radius;
 };
 
-class SimpleAnomalyDetector:public TimeSeriesAnomalyDetector {
-
-    vector<correlatedFeatures> cf;
+class SimpleAnomalyDetector:public TimeSeriesAnomalyDetector{
 
 public:
 
+    vector<correlatedFeatures> cf;
+
     float m_threshold;
     float minimumThreshold;
-    float m_maximumCorrelation;
 
     //SimpleAnomalyDetector();
     SimpleAnomalyDetector() {
@@ -50,8 +49,8 @@ public:
     vector<correlatedFeatures> getNormalModel(){
         return cf;
     }
+
     virtual float calcDistance(Point a, Point b);
-    virtual bool isInsideCircle(Circle c, Point a);
 };
 
 

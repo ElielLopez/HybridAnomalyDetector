@@ -4,13 +4,14 @@
 #define HYBRIDANOMALYDETECTOR_H_
 
 #include "SimpleAnomalyDetector.h"
-//#include "minCircle.h"
+#include "minCircle.h"
 
 class HybridAnomalyDetector:public SimpleAnomalyDetector {
 
 public:
 
-	HybridAnomalyDetector();
+    vector<AnomalyReport> ar;
+    HybridAnomalyDetector();
 
     // does not need to be depend on the origin of the information (stream or file...)
     virtual void learnNormal(const TimeSeries& ts);
@@ -18,7 +19,7 @@ public:
     // return list of reports. every anomaly report has description and time stamp (nekudat zman)
     virtual vector<AnomalyReport> detect(const TimeSeries& ts);
 
-	virtual ~HybridAnomalyDetector();
+    virtual ~HybridAnomalyDetector();
 
 };
 
