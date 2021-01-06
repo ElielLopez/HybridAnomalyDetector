@@ -4,121 +4,118 @@
 #include "minCircle.h"
 #include <math.h>
 
-// return the middle point by equation: x = (x1-x2) / 2, y = (y1-y2) / 2.
-Point minCircle::calcMiddle(Point a, Point b) {
+using namespace std;
 
-    float ax, ay;
-    float bx, by;
-    float x, y;
 
-    ax = a.x;
-    ay = a.y;
-    bx = b.x;
-    by = b.y;
-
-    x = (ax + bx) / 2;
-    y = (ay + by) / 2;
-
-    Point middle(x, y);
-
-    return middle;
+float minCircle::dist(Point a, Point b){
+    float x2=(a.x-b.x)*(a.x-b.x);
+    float y2=(a.y-b.y)*(a.y-b.y);
+    return sqrt(x2+y2);
 }
 
-// return the distance between two point by the equation:
-// D = sqrt((x1-x2)^2 + (y1-y2)^2)
-float minCircle::calcDistance(Point a, Point b) {
-
-    float distance;
-    float ax, ay;
-    float bx, by;
-    float x, y;
-
-    ax = a.x;
-    ay = a.y;
-    bx = b.x;
-    by = b.y;
-
-    x = ax - bx;
-    y = ay - by;
-
-    x = pow(x, 2);
-    y = pow(y, 2);
-
-    distance = x + y;
-    distance = sqrtf(distance);
-
-    return distance;
+Circle minCircle::from2points(Point a,Point b){
+    float x=(a.x+b.x)/2;
+    float y=(a.y+b.y)/2;
+    float r=dist(a,b)/2;
+    return Circle(Point(x,y),r);
 }
 
-// given two points, calculate the center point and the radius and creates a small circle
-// that the two points are on the circle
-Circle minCircle::createTwoPointCircle(Point a, Point b) {
 
-    float radius;
 
-    auto center = calcMiddle(a, b);
-    radius = calcDistance(a, b);
-    radius /= 2;
+Circle minCircle::from3Points(Point a, Point b, Point c){
+    // find the circumcenter of the triangle a,b,c
+    // find the circumcenter of the triangle a,b,c
 
-    Circle c(center, radius);
+    Point mAB((a.x+b.x)/2 , (a.y+b.y)/2); // mid point of line AB
+    float slopAB = (b.y - a.y) / (b.x - a.x); // the slop of AB
+    float pSlopAB = - 1/slopAB; // the perpendicular slop of AB
+    // pSlop equation is:
+    // y - mAB.y = pSlopAB * (x - mAB.x) ==> y = pSlopAB * (x - mAB.x) + mAB.y
 
-    return c;
+    Point mBC((b.x+c.x)/2 , (b.y+c.y)/2); // mid point of line BC
+    float slopBC = (c.y - b.y) / (c.x - b.x); // the slop of BC
+    float pSlopBC = - 1/slopBC; // the perpendicular slop of BC
+    // pSlop equation is:
+    // y - mBC.y = pSlopBC * (x - mBC.x) ==> y = pSlopBC * (x - mBC.x) + mBC.y
+
+    /*
+    pSlopAB * (x - mAB.x) + mAB.y = pSlopBC * (x - mBC.x) + mBC.y
+    pSlopAB*x - pSlopAB*mAB.x + mAB.y = pSlopBC*x - pSlopBC*mBC.x + mBC.y
+
+    x*(pSlopAB - pSlopBC) = - pSlopBC*mBC.x + mBC.y + pSlopAB*mAB.x - mAB.y
+    x = (- pSlopBC*mBC.x + mBC.y + pSlopAB*mAB.x - mAB.y) / (pSlopAB - pSlopBC);
+
+    */
+
+    float x = (- pSlopBC*mBC.x + mBC.y + pSlopAB*mAB.x - mAB.y) / (pSlopAB - pSlopBC);
+    float y = pSlopAB * (x - mAB.x) + mAB.y;
+    Point center(x,y);
+    float R=dist(center,a);
+
+    return Circle(center,R);
 }
 
-// checks if a given Point is outside the boundaries of the circle.
-bool minCircle::isInsideCircle(Circle c, Point a) {
-    return calcDistance(c.center, a) <= c.radius;
+Circle minCircle::trivial(vector<Point>& P){
+    if(P.size()==0)
+        return Circle(Point(0,0),0);
+    else if(P.size()==1)
+        return Circle(P[0],0);
+    else if (P.size()==2)
+        return from2points(P[0],P[1]);
+
+    // maybe 2 of the points define a small circle that contains the 3ed point
+    Circle c=from2points(P[0],P[1]);
+    if(dist(P[2],c.center)<=c.radius)
+        return c;
+    c=from2points(P[0],P[2]);
+    if(dist(P[1],c.center)<=c.radius)
+        return c;
+    c=from2points(P[1],P[2]);
+    if(dist(P[0],c.center)<=c.radius)
+        return c;
+    // else find the unique circle from 3 points
+    return from3Points(P[0],P[1],P[2]);
 }
 
-// checks if all points are inside the circle. if even a single point is outside- return false.
-bool minCircle::isValidMEC(Circle c, Point** points, size_t size) {
-    for(int i = 0; i < size; i++) {
-        if(!isInsideCircle(c, Point(points[i]->x, points[i]->y))) return false;
-    }
-    return true;
-}
 
-// return a minimal circle, enclosing all points in 2D plane.
-Circle minCircle::findMinCircle(Point** points,size_t size) {
+/*
+algorithm welzl
+    input: Finite sets P and R of points in the plane |R|<= 3.
+    output: Minimal disk enclosing P with R on the boundary.
 
-//    for(int i=0;i<size;i++)
-//        cout<<points[i]->x<<" --- "<<points[i]->y<<endl;
+    if P is empty or |R| = 3 then
+        return trivial(R)
+    choose p in P (randomly and uniformly)
+    D := welzl(P - { p }, R)
+    if p is in D then
+        return D
 
-    // first checks for trivial size of 0,1,2,3.
-    if(size == 0) return {{0, 0}, 0};
-    if(size == 1) return {Point(points[0]->x, points[0]->y), 0};
-    if(size == 2) return createTwoPointCircle(Point(points[0]->x, points[0]->y),
-                                              Point(points[1]->x, points[1]->y));
+    return welzl(P - { p }, R U { p })
+ */
 
-    Point p1(points[0]->x, points[0]->y);
-    Point p2(points[1]->x, points[1]->y);
 
-    // default circle.
-//    float radius;
-//    radius = this->calcDistance(p1, p2);
-//    radius /= 2;
-
-    //Circle mec = {p1, INF};
-    Circle mec = createTwoPointCircle(p1, p2);
-
-    // for every 2 points, create a circle and then check its validity and size.
-    // if smaller then the current circle- update it.
-    for(int i = 0; i < size; i++) {
-
-        // this condition helps reduce the time significantly
-        // because its ignoring points that are inside the circle.
-        for(int j = i + 1; j < size ; j++) {
-
-            if(!isInsideCircle(mec, Point(points[j]->x, points[j]->y))) {
-                Circle tmp = createTwoPointCircle(Point(points[i]->x, points[i]->y),
-                                                  Point(points[j]->x, points[j]->y));
-                if(tmp.radius < mec.radius && isValidMEC(tmp, points, size)) {
-                    mec = tmp;
-                }
-            }
-        }
-
+Circle minCircle::welzl(Point** P,vector<Point> R, size_t n){
+    if(n==0 || R.size()==3){
+        return trivial(R);
     }
 
-    return mec;
+    // remove random point p
+    // swap is more efficient than remove
+    //srand (time(NULL));
+    int i=rand()%n;
+    Point p(P[i]->x,P[i]->y);
+    swap(P[i],P[n-1]);
+
+    Circle c=welzl(P,R,n-1);
+
+    if(dist(p,c.center)<=c.radius)
+        return c;
+
+    R.push_back(p);
+
+    return welzl(P,R,n-1);
+}
+
+Circle minCircle::findMinCircle(Point** points,size_t size){
+    return welzl(points,{},size);
 }
