@@ -34,15 +34,15 @@ void TimeSeries::saveData(const char *fileName) {
         featuresAndValues fv;
         index = 0;
 
-        while(getline(ss, token, ',')) { // "1"
+        while(getline(ss, token, ',')) {
             val = stof(token);
-            colName = columnFeature[index]; // colName = "A"
-            fv.insert({colName, val}); // {A, 1}...{D, 426.5}
+            colName = columnFeature[index];
+            fv.insert({colName, val});
             if(ss.peek() == ',') ss.ignore();
             if(ss.peek() == '\n') ss.ignore();
             index++;
         }
-        data.push_back(fv); // data: { {A, 1}...{D, 426.5}, .....,{} }
+        data.push_back(fv);
     }
     myFile.close();
 }
@@ -58,7 +58,6 @@ vector<float> TimeSeries::getValues(string feature) const{
 
     return valuesVector;
 }
-
 
 // destructor.
 TimeSeries::~TimeSeries() {}

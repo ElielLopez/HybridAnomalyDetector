@@ -9,16 +9,23 @@ HybridAnomalyDetector::~HybridAnomalyDetector() {
     // TODO Auto-generated destructor stub
 }
 
+// the learning will stay the same as before using the SimpleAnomalyDetector
+// to learn the data.
 void HybridAnomalyDetector::learnNormal(const TimeSeries& ts) {
     SimpleAnomalyDetector::learnNormal(ts);
 }
 
-// return list of reports. every anomaly report has description and time stamp (nekudat zman)
+// the detect function will check if the correlation of a given CF is bigger then 0.9 or less then 0.9
+// but bigger then 0.5. in the first case, will use the simple anomaly detector.
+// int the second case, creating 2 vector of thr correlated features to create a Point**
+// for every point, checking the distance from the center of the training set circle of this features then
+// checking if the distance is bigger than the threshold of those CF.
+// if so, this is an anomaly and it will be save in anomaly report
 vector<AnomalyReport> HybridAnomalyDetector::detect(const TimeSeries& ts) {
 
     vector<AnomalyReport> tempAR;
     vector<float> tmpVec1, tmpVec2;
-    string desc;
+    string description;
     int sizeOfVector;
 
     for(auto it = this->cf.begin(); it != cf.end(); it++) {
@@ -27,23 +34,22 @@ vector<AnomalyReport> HybridAnomalyDetector::detect(const TimeSeries& ts) {
 
             tempAR = SimpleAnomalyDetector::detect(ts);
 
-        } else if((it->corrlation > 0.5) && (it->corrlation < 0.9)) { // E-F
+        } else if((it->corrlation > 0.5) && (it->corrlation < 0.9)) {
 
-            tmpVec1 = ts.getValues(it->feature1); // E
-            tmpVec2 = ts.getValues(it->feature2); // F
-            sizeOfVector = tmpVec1.size(); // 200
+            tmpVec1 = ts.getValues(it->feature1);
+            tmpVec2 = ts.getValues(it->feature2);
+            sizeOfVector = tmpVec1.size();
 
             Point* ps3[sizeOfVector];
             for(int i=0;i<sizeOfVector;i++)
                 ps3[i]=new Point(tmpVec1[i],tmpVec2[i]);
 
-
             for(int j = 0; j < sizeOfVector; j++){
 
                 Point p(tmpVec1[j], tmpVec2[j]);
                 if(it->threshold  < calcDistance(p, it->cf_center)) {
-                    desc = it->feature1 + '-' + it->feature2;
-                    tempAR.push_back(AnomalyReport(desc, j + 1));
+                    description = it->feature1 + '-' + it->feature2;
+                    tempAR.push_back(AnomalyReport(description, j + 1));
                 }
             }
         }

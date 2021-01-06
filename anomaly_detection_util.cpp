@@ -1,4 +1,3 @@
-
 #include <math.h>
 #include "anomaly_detection_util.h"
 
@@ -148,7 +147,7 @@ float dev(Point p,Line l){
     a = l.a;
     b = l.b;
     lineY = a * px + b;
-    // | f(x) - y |
+
     deviation = fabs(lineY - py);
 
     return deviation;
@@ -168,5 +167,3 @@ float maximumDeviation(float* x, float* y, int size, Line l) {
     }
     return max;
 }
-
-// submit

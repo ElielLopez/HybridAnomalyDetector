@@ -5,7 +5,6 @@
 #ifndef EX4_ANOMALY_DETECTION_UTIL_H
 #define EX4_ANOMALY_DETECTION_UTIL_H
 
-
 float avg(float* x, int size);
 
 // returns the variance of X and Y
@@ -45,7 +44,5 @@ float dev(Point p,Line l);
 
 // returns the maximum value.
 float maximumDeviation(float* x, float* y, int size, Line l);
-
-
 
 #endif //EX4_ANOMALY_DETECTION_UTIL_H

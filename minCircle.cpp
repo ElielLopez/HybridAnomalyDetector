@@ -1,11 +1,13 @@
-//
-// Created by eliel on 27/12/2020.
-//
 #include "minCircle.h"
 #include <math.h>
 
-using namespace std;
+/*
+ * I download the solution of ex3 since its working better then mine.
+ * i didnt want to have mistakes on the following parts of the milestone so
+ * i used this code.
+ * */
 
+using namespace std;
 
 float minCircle::dist(Point a, Point b){
     float x2=(a.x-b.x)*(a.x-b.x);
@@ -19,7 +21,6 @@ Circle minCircle::from2points(Point a,Point b){
     float r=dist(a,b)/2;
     return Circle(Point(x,y),r);
 }
-
 
 
 Circle minCircle::from3Points(Point a, Point b, Point c){

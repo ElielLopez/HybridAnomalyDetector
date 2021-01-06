@@ -71,7 +71,13 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             cf.push_back(tmpCF); // inserting into the returned vector
         }
 
-        // ----------------
+        // this condition check if the correlation of the features are between 0.5 to 0.9
+        // if so, the features names, correlation etc. are saved in temporary CF
+        // and then creating Point** from the data (the vector are already made before)
+        // afterwards, creating a circle using the findMinCircle from last exercise (note
+        // that i used the solution) to create a minimum circle of all
+        // the points from the training set. the threshold will be the radius of this circle
+        // multiply by 1.1 for safety margin.
         if(0.5 < maxPearsonCorrelation && maxPearsonCorrelation < m_threshold) {
             correlatedFeatures tmpCF2;
             tmpCF2.feature1 = f1;
@@ -129,7 +135,6 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
 
     return ar;
 }
-
 
 float SimpleAnomalyDetector::calcDistance(Point a, Point b) {
 

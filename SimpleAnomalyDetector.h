@@ -18,7 +18,7 @@ struct correlatedFeatures{
     float corrlation;
     Line lin_reg;
     float threshold;
-    //----//
+    // new fields for the circle representation.
     Point cf_center;
     float cf_radius;
 };
@@ -32,7 +32,6 @@ public:
     float m_threshold;
     float minimumThreshold;
 
-    //SimpleAnomalyDetector();
     SimpleAnomalyDetector() {
         m_threshold = 0.9, minimumThreshold = 0.1;
     }
@@ -42,7 +41,7 @@ public:
     // does not need to be depend on the origin of the information (stream or file...)
     virtual void learnNormal(const TimeSeries& ts);
 
-    // return list of reports. every anomaly report has description and time stamp (nekudat zman)
+    // return list of reports. every anomaly report has description and time stamp
     virtual vector<AnomalyReport> detect(const TimeSeries& ts);
 
     // returns list of correlated features.
@@ -52,6 +51,5 @@ public:
 
     virtual float calcDistance(Point a, Point b);
 };
-
 
 #endif //EX4_SIMPLEANOMALYDETECTOR_H
