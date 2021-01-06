@@ -86,10 +86,8 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             Circle c = mc.findMinCircle(ps2, sizeOfVector);
             tmpCF2.cf_radius = c.radius; // minimum radius to cover all training points.
             tmpCF2.cf_center = c.center;
-            //tmpCF2.threshold = c.radius * (1 + minimumThreshold);
-
-            // this line have usualy less then 100 false alarms
-            tmpCF2.threshold = maxDeviation * (1 + minimumThreshold);
+            tmpCF2.threshold = c.radius * (1 + minimumThreshold);
+            //tmpCF2.threshold = maxDeviation * (1 + minimumThreshold);
             cf.push_back(tmpCF2);
         }
     }
@@ -104,11 +102,8 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     string description, f1, f2;
     float maximumDev;
     float deviationOfPoint;
-    int sizeOfVector;
-
-    float dist;
     float corr;
-
+    int sizeOfVector;
 
     for(auto it = cf.begin(); it != cf.end(); it++) {
         f1 = it->feature1;
@@ -129,11 +124,6 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
                 description = f1 + "-" + f2;
                 ar.push_back(AnomalyReport(description, j + 1));
             }
-
-//            if((maximumDev < deviationOfPoint) && (0.5 < corr && corr < m_threshold)) {
-//                description = f1 + "-" + f2;
-//                ar.push_back(AnomalyReport(description, j + 1));
-//            }
         }
     }
 

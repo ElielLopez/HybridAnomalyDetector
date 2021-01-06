@@ -87,7 +87,7 @@ void checkCorrelation(correlatedFeatures c,string f1, string f2, float a, float 
 }
 
 int main(){
-    cout<<"Start"<<endl;
+
     srand (time(NULL));
     float a1=1+rand()%10, b1=-50+rand()%100;
     float a2=1+rand()%20 , b2=-50+rand()%100;
@@ -143,10 +143,6 @@ int main(){
     for(int i=0;i<3;i++)
         if(!detected[i]) {
             cout << "an anomaly was not detected (-10)" << endl;
-//            for (auto it = anomalies.begin(); it != anomalies.end(); it++) {
-//                cout << it[i].description<< endl;
-//                cout << it[i].timeStep<< endl;
-//            }
         } else {
             falseAlarms--;
         }
