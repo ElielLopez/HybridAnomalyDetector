@@ -40,7 +40,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             // first vector of value and one from the second vector. together they will be a Point.
             Point* ps[sizeOfVector];
             for(int i=0;i<sizeOfVector;i++)
-                ps[i]=new Point(tmp1[i],tmp2[i]);
+                ps[i]=new Point(tmp1[i],tmp2[i]); // TODO delete ps
 
             // computing the correlation between two features.
             pearsonCorrelation = pearson(&tmp1[0], &tmp2[0], sizeOfVector);
@@ -87,12 +87,14 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 
             Point* ps2[sizeOfVector];
             for(int i=0;i<sizeOfVector;i++)
-                ps2[i]=new Point(tmp1[i],tmp2[i]);
+                ps2[i]=new Point(tmp1[i],tmp2[i]); // TODO delete ps
 
             Circle c = mc.findMinCircle(ps2, sizeOfVector);
             tmpCF2.cf_radius = c.radius; // minimum radius to cover all training points.
             tmpCF2.cf_center = c.center;
             tmpCF2.threshold = c.radius * (1 + minimumThreshold);
+            //tmpCF2.threshold = c.radius * 1.2;
+            //tmpCF2.threshold = c.radius * 1.05;
             //tmpCF2.threshold = maxDeviation * (1 + minimumThreshold);
             cf.push_back(tmpCF2);
         }

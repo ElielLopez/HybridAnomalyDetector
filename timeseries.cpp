@@ -18,7 +18,13 @@ void TimeSeries::saveData(const char *fileName) {
         // for example: index 0 will be A and every time i will look for A
         // i will look into a map with key 0
         while(getline(ss, colName, ',')) {
+
+            // removing "\r" from the end of the token
+            if(!colName.empty() && colName[colName.size() - 1] == '\r') {
+                colName.erase(colName.size() - 1);
+            }
             columnFeature.insert({index, colName}); // {0, A}
+            //if(ss.peek() == '\r') ss.ignore();
             index++;
         }
     }

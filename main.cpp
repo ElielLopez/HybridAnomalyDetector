@@ -101,7 +101,8 @@ int main(){
     //	E-F: y=a3*x+b3
 
     generateTrainCSV(a1,b1,a2,b2,a3,b3);
-    TimeSeries ts("trainFile.csv");
+    //TimeSeries ts("trainFile.csv");
+    TimeSeries ts("input1.csv");
     HybridAnomalyDetector ad;
     ad.learnNormal(ts);
     vector<correlatedFeatures> cf=ad.getNormalModel();
@@ -126,7 +127,8 @@ int main(){
     anomalies.push_back(AnomalyReport("E-F",anomaly3));
 
     generateTestCSV(a1,b1,a2,b2,a3,b3);
-    TimeSeries ts2("testFile.csv");
+    //TimeSeries ts2("testFile.csv"); //TODO
+    TimeSeries ts2("input2.csv");
     vector<AnomalyReport> r = ad.detect(ts2);
     bool detected[]={false,false,false};
 

@@ -15,7 +15,7 @@ class TimeSeries {
 
 private:
     const char* fileName;
-    string line, colName, token;
+    string line, colName, token, sizeOfTok;
     int index;
     float val;
 

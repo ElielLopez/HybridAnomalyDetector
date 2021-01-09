@@ -42,7 +42,7 @@ vector<AnomalyReport> HybridAnomalyDetector::detect(const TimeSeries& ts) {
 
             Point* ps3[sizeOfVector];
             for(int i=0;i<sizeOfVector;i++)
-                ps3[i]=new Point(tmpVec1[i],tmpVec2[i]);
+                ps3[i]=new Point(tmpVec1[i],tmpVec2[i]); // TODO delete ps
 
             for(int j = 0; j < sizeOfVector; j++){
 
